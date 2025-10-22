@@ -1,18 +1,19 @@
-datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")         
-  directUrl         = env("DIRECT_DATABASE_URL")   
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")   
-}
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
 model User {
-  id              String   @id @default(cuid())
-  email           String   @unique
-  passwordHash    String
-  hashedRt        String?  // lưu hash refresh token hiện hành (rotate)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  hashedRt     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

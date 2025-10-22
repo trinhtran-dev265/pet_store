@@ -6,4 +6,3 @@ export default registerAs('jwt', () => ({
   accessTtl: process.env.JWT_ACCESS_TTL ?? '900s',
   refreshTtl: process.env.JWT_REFRESH_TTL ?? '7d',
 }));
-    

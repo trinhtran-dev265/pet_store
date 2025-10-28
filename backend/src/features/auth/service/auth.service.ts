@@ -15,6 +15,7 @@ import {
   isErrorWithMessage,
 } from '../../../shared/error/prisma.guard';
 import { RedisService } from '../../../core/redis/redis.service';
+import { Role } from '@prisma/client';
 
 type Tokens = { accessToken: string; refreshToken: string };
 
@@ -31,19 +32,20 @@ export class AuthService {
 
     try {
       await this.prisma.user.create({
-        data: { email: dto.email, passwordHash },
+        data: { email: dto.email, passwordHash, role: Role.USER },
       });
-    } catch (err: unknown) {
-      if (isPrismaKnownError(err)) {
-        if (err.code === 'P2002')
+    } catch (error: unknown) {
+      if (isPrismaKnownError(error)) {
+        if (error.code === 'P2002')
           throw new ConflictException('Email already registered');
-      }
-      if (isPrismaValidationError(err)) {
+      } else if (isPrismaValidationError(error)) {
         throw new ConflictException('Invalid data');
-      }
-      throw new InternalServerErrorException(
-        isErrorWithMessage(err) ? err.message : 'Failed to create user',
-      );
+      } else if (isErrorWithMessage(error)) {
+        throw new InternalServerErrorException(error.message);
+      } else
+        throw new InternalServerErrorException(
+          isErrorWithMessage(error) ? error.message : 'Failed to create user',
+        );
     }
   }
 
@@ -56,7 +58,7 @@ export class AuthService {
     const ok = await argon.verify(user.passwordHash, dto.password);
     if (!ok) throw new UnauthorizedException('Invalid email or password');
 
-    const tokens = await this.signTokens(user.id, user.email);
+    const tokens = await this.signTokens(user.id, user.email, user.role);
     await this.saveRefresh(user.id, tokens.refreshToken);
     return tokens;
   }
@@ -71,7 +73,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new UnauthorizedException('User no longer exists');
 
-    const tokens = await this.signTokens(user.id, user.email);
+    const tokens = await this.signTokens(user.id, user.email, user.role);
     await this.saveRefresh(user.id, tokens.refreshToken);
     return tokens;
   }
@@ -80,9 +82,13 @@ export class AuthService {
     await this.redis.del(this.refreshKey(userId));
   }
 
-  private async signTokens(userId: string, email: string): Promise<Tokens> {
+  private async signTokens(
+    userId: string,
+    email: string,
+    role: Role,
+  ): Promise<Tokens> {
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwt.signAsync({ sub: userId, email }, { expiresIn: '15m' }),
+      this.jwt.signAsync({ sub: userId, email, role }, { expiresIn: '15m' }),
       this.jwt.signAsync({ sub: userId }, { expiresIn: '7d' }),
     ]);
     return { accessToken, refreshToken };

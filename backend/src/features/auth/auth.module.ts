@@ -16,7 +16,7 @@ import jwtConfig from './config/jwt';
       secret: process.env.JWT_ACCESS_SECRET ?? 'dev-secret',
       signOptions: { issuer: 'petstore', audience: 'petstore-app' },
     }),
-    ConfigModule.forFeature(jwtConfig), 
+    ConfigModule.forFeature(jwtConfig),
   ],
   controllers: [AuthController],
   providers: [AuthService, RedisService, JwtStrategy, RefreshStrategy],

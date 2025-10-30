@@ -16,6 +16,7 @@ import {
 } from '../../../shared/error/prisma.guard';
 import { RedisService } from '../../../core/redis/redis.service';
 import { Role } from '@prisma/client';
+import { UserService } from '@/features/user/service/user.service';
 
 type Tokens = { accessToken: string; refreshToken: string };
 
@@ -25,14 +26,17 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly redis: RedisService,
+    private readonly userService: UserService,
   ) {}
 
   async register(dto: RegisDTO): Promise<void> {
     const passwordHash = await argon.hash(dto.password);
 
     try {
-      await this.prisma.user.create({
-        data: { email: dto.email, passwordHash, role: Role.USER },
+      await this.userService.create({
+        email: dto.email,
+        passwordHash,
+        role: Role.USER,
       });
     } catch (error: unknown) {
       if (isPrismaKnownError(error)) {
@@ -88,7 +92,7 @@ export class AuthService {
     role: Role,
   ): Promise<Tokens> {
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwt.signAsync({ sub: userId, email, role }, { expiresIn: '15m' }),
+      this.jwt.signAsync({ sub: userId, email, role }, { expiresIn: '100d' }),
       this.jwt.signAsync({ sub: userId }, { expiresIn: '7d' }),
     ]);
     return { accessToken, refreshToken };

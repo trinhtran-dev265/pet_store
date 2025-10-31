@@ -17,6 +17,10 @@ model User {
   role         Role     @default(USER)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  userPets     UserPet[]
+  cart         Cart?
+  orders       Order[]
 }
 
 enum Role {
@@ -37,6 +41,8 @@ model Pet {
   products    PetProduct[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+
+  userPets    UserPet[]
 }
 
 model Product {
@@ -58,4 +64,65 @@ model PetProduct {
   product   Product  @relation(fields: [productId], references: [id])
 
   @@id([petId, productId])
+}
+
+model UserPet {
+  id        String   @id @default(uuid())
+  userId    String
+  petId     String
+  user      User     @relation(fields: [userId], references: [id])
+  pet       Pet      @relation(fields: [petId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, petId])
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String        @id @default(uuid())
+  cartId    String
+  itemId    String         // ID của Pet hoặc Product
+  itemType  CartItemType
+  quantity  Int            @default(1)
+  cart      Cart           @relation(fields: [cartId], references: [id])
+}
+
+enum CartItemType {
+  PET
+  PRODUCT
+}
+
+model Order {
+  id        String        @id @default(uuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+  status    OrderStatus    @default(PENDING)
+  total     Float
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model OrderItem {
+  id        String        @id @default(uuid())
+  orderId   String
+  itemId    String
+  itemType  CartItemType
+  quantity  Int           @default(1)
+  price     Float
+  order     Order         @relation(fields: [orderId], references: [id])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELED
 }

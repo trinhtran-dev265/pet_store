@@ -8,12 +8,14 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { RefreshStrategy } from './strategy/refresh.strategy';
 import { ConfigModule } from '@nestjs/config';
 import jwtConfig from './config/jwt';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     PrismaModule,
+    UserModule,
+    ConfigModule.forFeature(jwtConfig),
     JwtModule.register({
-      secret: process.env.JWT_ACCESS_SECRET ?? 'dev-secret',
       signOptions: { issuer: 'petstore', audience: 'petstore-app' },
     }),
     ConfigModule.forFeature(jwtConfig),

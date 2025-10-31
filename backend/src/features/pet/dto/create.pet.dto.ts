@@ -11,7 +11,7 @@ export class CreatePetDTO {
 
   @IsOptional()
   @IsString()
-  breed?: string;
+  breed: string;
 
   @IsOptional()
   @IsNumber()

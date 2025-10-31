@@ -3,6 +3,7 @@ import { PrismaService } from '@/core/prisma/prisma.service';
 import { Product } from '@prisma/client';
 import { CreateProductDTO } from '../dto/create.product.dto';
 import { UpdateProductDTO } from '../dto/update.product.dto';
+import { PRODUCT_MESSAGES } from '@/shared/contants/messages/product.messages';
 
 @Injectable()
 export class ProductService {
@@ -28,13 +29,14 @@ export class ProductService {
 
   async findOne(id: string): Promise<Product> {
     const product = await this.prisma.product.findUnique({ where: { id } });
-    if (!product) throw new NotFoundException('Product not found');
+    if (!product) throw new NotFoundException(PRODUCT_MESSAGES.ERROR.NOT_FOUND);
     return product;
   }
 
   async update(id: string, dto: UpdateProductDTO): Promise<Product> {
     const existing = await this.prisma.product.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException('Product not found');
+    if (!existing)
+      throw new NotFoundException(PRODUCT_MESSAGES.ERROR.NOT_FOUND);
 
     return this.prisma.product.update({
       where: { id },
@@ -44,7 +46,8 @@ export class ProductService {
 
   async remove(id: string): Promise<Product> {
     const existing = await this.prisma.product.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException('Product not found');
+    if (!existing)
+      throw new NotFoundException(PRODUCT_MESSAGES.ERROR.NOT_FOUND);
 
     return this.prisma.product.delete({
       where: { id },

@@ -3,6 +3,7 @@ import { PrismaService } from '@/core/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { CreatePetDTO } from '../dto/create.pet.dto';
 import { UpdatePetDTO } from '../dto/update.pet.dto';
+import { PET_MESSAGES } from '@/shared/contants/messages/pet.messages';
 
 @Injectable()
 export class PetService {
@@ -37,13 +38,13 @@ export class PetService {
       where: { id },
       include: { products: { include: { product: true } } },
     });
-    if (!pet) throw new NotFoundException('Pet not found');
+    if (!pet) throw new NotFoundException(PET_MESSAGES.ERROR.NOT_FOUND);
     return pet;
   }
 
   async update(id: string, dto: UpdatePetDTO) {
     const exists = await this.prisma.pet.findUnique({ where: { id } });
-    if (!exists) throw new NotFoundException('Pet not found');
+    if (!exists) throw new NotFoundException(PET_MESSAGES.ERROR.NOT_FOUND);
 
     return this.prisma.pet.update({
       where: { id },
@@ -53,7 +54,7 @@ export class PetService {
 
   async remove(id: string) {
     const exists = await this.prisma.pet.findUnique({ where: { id } });
-    if (!exists) throw new NotFoundException('Pet not found');
+    if (!exists) throw new NotFoundException(PET_MESSAGES.ERROR.NOT_FOUND);
 
     return this.prisma.pet.delete({ where: { id } });
   }
@@ -63,7 +64,7 @@ export class PetService {
       where: { id: petId },
       include: { products: { include: { product: true } } },
     });
-    if (!pet) throw new NotFoundException('Pet not found');
+    if (!pet) throw new NotFoundException(PET_MESSAGES.ERROR.NOT_FOUND);
     return pet.products.map((p) => p.product);
   }
 

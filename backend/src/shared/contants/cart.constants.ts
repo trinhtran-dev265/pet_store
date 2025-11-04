@@ -1,0 +1,4 @@
+export const CART_CONSTANTS = {
+  MIN_QUANTITY: 1,
+  TOTAL_TOLERANCE: 0.01,
+};

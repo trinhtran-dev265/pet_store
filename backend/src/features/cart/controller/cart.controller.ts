@@ -26,7 +26,7 @@ export class CartController {
 
   @Get()
   @Roles(Role.USER, Role.STAFF, Role.MANAGER)
-  async getCart(@GetUser() user: { sub?: string; id?: string }) {
+  async get(@GetUser() user: { sub?: string; id?: string }) {
     const userId = user.sub ?? user.id;
     if (!userId) throw new BadRequestException('No user in token');
     return this.cartService.getCart(userId);
@@ -34,7 +34,7 @@ export class CartController {
 
   @Post('add')
   @Roles(Role.USER, Role.STAFF, Role.MANAGER)
-  async addToCart(
+  async create(
     @GetUser() user: { sub?: string; id?: string },
     @Body() dto: AddCartItemDTO,
   ) {
@@ -45,7 +45,7 @@ export class CartController {
 
   @Patch('update/:id')
   @Roles(Role.USER, Role.STAFF, Role.MANAGER)
-  async updateItem(
+  async update(
     @GetUser() user: { sub?: string; id?: string },
     @Param('id') id: string,
     @Body() dto: UpdateCartItemDTO,
@@ -57,7 +57,7 @@ export class CartController {
 
   @Delete('remove/:id')
   @Roles(Role.USER, Role.STAFF, Role.MANAGER)
-  async removeItem(
+  async remove(
     @GetUser() user: { sub?: string; id?: string },
     @Param('id') id: string,
   ) {
@@ -68,7 +68,7 @@ export class CartController {
 
   @Delete('clear')
   @Roles(Role.USER, Role.STAFF, Role.MANAGER)
-  async clearCart(@GetUser() user: { sub?: string; id?: string }) {
+  async clear(@GetUser() user: { sub?: string; id?: string }) {
     const userId = user.sub ?? user.id;
     if (!userId) throw new BadRequestException('No user in token');
     return this.cartService.clearCart(userId);

@@ -124,5 +124,6 @@ model OrderItem {
 enum OrderStatus {
   PENDING
   PAID
+  COMPLETED
   CANCELED
 }

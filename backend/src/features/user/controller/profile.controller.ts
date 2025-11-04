@@ -10,15 +10,7 @@ import {
 import { JwtGuard } from '@/features/auth/guard/jwt.guard';
 import { UserService } from '../service/user.service';
 import { UpdateUserDTO } from '../dto/update.user.dto';
-import type { Request } from 'express';
-
-interface RequestWithUser extends Request {
-  user?: {
-    sub: string;
-    email: string;
-    role: string;
-  };
-}
+import type { RequestWithUser } from '@/shared/types/request-with-user';
 
 @UseGuards(JwtGuard)
 @Controller('profile')

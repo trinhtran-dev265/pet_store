@@ -8,7 +8,7 @@ import { UpdateCartItemDTO } from '../dto/update.cart.dto';
 import { CartItemType } from '@prisma/client';
 import { PrismaService } from '@/core/prisma/prisma.service';
 import { CART_MESSAGES } from '@/shared/contants/messages/cart.messages';
-import { CART_LIMITS } from '@/shared/contants/cart.contants';
+import { CART_CONSTANTS } from '@/shared/contants/cart.constants';
 
 @Injectable()
 export class CartService {
@@ -93,7 +93,7 @@ export class CartService {
     if (!cart) throw new NotFoundException(CART_MESSAGES.ERROR.CART_NOT_FOUND);
     const item = cart.items.find((i) => i.id === itemId);
     if (!item) throw new NotFoundException(CART_MESSAGES.ERROR.ITEM_NOT_FOUND);
-    if (dto.quantity <= CART_LIMITS.MIN_QUANTITY) {
+    if (dto.quantity <= CART_CONSTANTS.MIN_QUANTITY) {
       await this.prisma.cartItem.delete({ where: { id: item.id } });
       return { message: CART_MESSAGES.SUCCESS.ITEM_REMOVED };
     }

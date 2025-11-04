@@ -15,7 +15,7 @@ import {
   isPrismaKnownError,
   isPrismaValidationError,
   isErrorWithMessage,
-} from '../../../shared/error/prisma.guard';
+} from '../../../shared/errors/prisma.guard';
 import { RedisService } from '../../../core/redis/redis.service';
 import { Role } from '@prisma/client';
 import { UserService } from '@/features/user/service/user.service';
